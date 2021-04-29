@@ -1,1 +1,73 @@
-<iframe style="width:90%; height:90%;" src="sample5.html"></iframe>
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Speech recognition</title>
+            <style>
+                #result{
+                    background-color: black;
+                    font-size: 0.7cm;
+      position: fixed;
+      bottom:0;
+      max-height: 1cm;
+      max-width: 30cm;
+      width: auto;
+      padding: 5px;
+      margin: 20px;
+      color:white;
+      overflow: auto;
+      text-overflow: ellipsis;
+                }
+                input{
+                    position: fixed;
+                    right: 5%;
+                    bottom: 1cm;
+                }
+            </style>
+            <script type="application/javascript">
+                    
+                
+                function start(){
+                    var ele = document.getElementById("myButton1");
+                    if (ele.value=="Turn on CC")
+                {ele.value = "Turn off CC";}
+                else 
+                {ele.value = "Turn on CC";}
+                
+
+                 
+                    var r = document.getElementById("result");
+                    
+                    var speechRecognizer = new webkitSpeechRecognition();
+                    speechRecognizer.continuous = true;
+                    speechRecognizer.interimResults = true;
+                    speechRecognizer.lang = "en-US";
+                    if(ele.value == "Turn off CC"){speechRecognizer.start();}
+                    
+                    var finalTranscripts = "";
+                    speechRecognizer.onresult = function(event){
+                        var interimTranscripts = "";
+                        for(var i=event.resultIndex; i<event.results.length; i++){
+                            var transcript = event.results[i][0].transcript;
+                            transcript.replace("\n", "<br>");
+                            if(event.results[i].isFinal){
+                                finalTranscripts += transcript;
+                            }
+                            else{
+                                interimTranscripts += transcript;
+                            }
+                            r.scrollTop = r.scrollHeight;
+                            r.innerHTML = finalTranscripts + '<span style="color: #999;">' + interimTranscripts + '</span>';
+                            finalTranscripts = "";
+                            if(ele.value == "Turn on CC"){speechRecognizer.stop(); r.innerHTML = "";}
+                        }
+                    };
+                
+                }
+                
+            </script>
+        </head>
+        <body>
+            <div id="result"></div>
+            <input type="button" onclick="start()" value="Turn on CC" id= "myButton1"></input>
+        </body>
+    </html>
